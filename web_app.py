@@ -76,6 +76,9 @@ def delete(transaction_id):
     delete_transaction(transaction_id)
     return redirect(f"/?lang={lang}")
 
+import os
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
