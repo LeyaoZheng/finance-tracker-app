@@ -69,6 +69,12 @@ input {
     background: rgba(255,255,255,0.12);
     color: white;
     outline: none;
+    font-size: 16px;
+
+    /* 🔥 iOS Fix */
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
 }
 
 input::placeholder { color: rgba(255,255,255,0.6); }
