@@ -52,6 +52,13 @@ def add_transaction(date: str, amount_cents: int, category: str, merchant: str =
             (date, amount_cents, cat_id, merchant, note)
         )
 
+def delete_transaction(transaction_id: int):
+    with get_conn() as conn:
+        conn.execute(
+            "DELETE FROM transactions WHERE id = ?;",
+            (transaction_id,)
+        )
+
 def get_all_transactions():
     with get_conn() as conn:
         rows = conn.execute("""

@@ -3,119 +3,292 @@
 <head>
     <title>Finance Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background-color: #f2f2f7;
-        margin: 0;
-        padding: 20px;
-    }
+* { box-sizing: border-box; }
 
-    h1 {
-        text-align: center;
-    }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at 20% 30%, #1e293b, #0f172a 60%);
+    color: #fff;
+}
 
-    .card {
-        background: white;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        margin-bottom: 20px;
-    }
+.container {
+    max-width: 620px;
+    margin: 80px auto;
+    padding: 0 20px;
+}
 
-    input, button {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        margin-bottom: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-    }
+h1 {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
 
-    button {
-        background-color: black;
-        color: white;
-        border: none;
-        font-weight: bold;
-    }
+.lang-switch {
+    text-align: center;
+    margin-bottom: 40px;
+}
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+.lang-switch a {
+    color: #94a3b8;
+    text-decoration: none;
+    margin: 0 8px;
+    font-size: 14px;
+    transition: 0.3s;
+}
 
-    th, td {
-        padding: 8px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
+.lang-switch a:hover {
+    color: #fff;
+}
+
+.card {
+    backdrop-filter: blur(18px);
+    background: rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    transition: 0.3s ease;
+}
+
+.card:hover { transform: translateY(-3px); }
+
+h2 { margin-top: 0; font-weight: 500; }
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    border: none;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    outline: none;
+}
+
+input::placeholder { color: rgba(255,255,255,0.6); }
+
+button {
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    color: white;
+}
+
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-delete {
+    background: rgba(255,99,132,0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.btn-delete:hover { background: rgba(255,99,132,1); }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th {
+    text-align: left;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+}
+
+td {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.income { color: #4ade80; font-weight: 500; }
+.expense { color: #f87171; font-weight: 500; }
+
+ul { padding-left: 16px; }
+
+.ai-box {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    line-height: 1.6;
+}
 </style>
-
 </head>
 
 <body>
-    <h1>Finance Tracker</h1>
 
-    <!-- Add Transaction Card -->
-    <div class="card">
-        <h2>Add Transaction</h2>
-        <form action="/add" method="post">
-            <label>Date:</label>
-            <input type="date" name="date" required>
+<div class="container">
 
-            <label>Amount (use negative for expenses):</label>
-            <input type="number" step="0.01" name="amount" required>
+{% set text = {
+    "en": {
+        "title": "Finance Tracker",
+        "add": "Add Transaction",
+        "amount_placeholder": "Amount (use negative for expenses)",
+        "category_placeholder": "Category",
+        "delete": "Delete",
+        "transactions": "All Transactions",
+        "summary": "Monthly Summary",
+        "average": "Average Monthly Net",
+        "volatility": "Monthly Volatility",
+        "forecast": "Forecast (Next 3 Months)",
+        "ai_button": "AI Suggestion",
+        "ai_loading": "Analyzing your financial profile...",
+        "no_transactions": "No transactions yet.",
+        "no_monthly": "No monthly data yet."
+    },
+    "zh": {
+        "title": "财务管理",
+        "add": "添加交易",
+        "amount_placeholder": "金额（支出请输入负数）",
+        "category_placeholder": "类别",
+        "delete": "删除",
+        "transactions": "所有交易",
+        "summary": "月度总结",
+        "average": "月平均净收入",
+        "volatility": "月波动率",
+        "forecast": "未来三个月预测",
+        "ai_button": "AI 财务建议",
+        "ai_loading": "正在分析您的财务状况...",
+        "no_transactions": "暂无交易记录",
+        "no_monthly": "暂无月度数据"
+    }
+} %}
 
-            <label>Category:</label>
-            <input type="text" name="category" required>
+<h1>{{ text[lang]["title"] }}</h1>
 
-            <button type="submit">Add Transaction</button>
-        </form>
-    </div>
+<div class="lang-switch">
+    <a href="/?lang=en">English</a> |
+    <a href="/?lang=zh">中文</a>
+</div>
 
-    <!-- Transactions Card -->
-    <div class="card">
-        <h2>All Transactions</h2>
+<!-- Add Transaction -->
+<div class="card">
+    <h2>{{ text[lang]["add"] }}</h2>
+    <form action="/add" method="post">
+        <input type="hidden" name="lang" value="{{ lang }}">
+        <input type="date" name="date" required>
+        <input type="number" step="0.01" name="amount"
+               placeholder="{{ text[lang]['amount_placeholder'] }}" required>
+        <input type="text" name="category"
+               placeholder="{{ text[lang]['category_placeholder'] }}" required>
+        <button class="btn-primary">{{ text[lang]["add"] }}</button>
+    </form>
+</div>
 
-        {% if transactions %}
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                </tr>
+<!-- Transactions -->
+<div class="card">
+    <h2>{{ text[lang]["transactions"] }}</h2>
 
-                {% for t in transactions %}
-                <tr>
-                    <td>{{ t.date }}</td>
-                    <td>{{ t.category }}</td>
-                    <td>${{ t.amount_cents / 100 }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        {% else %}
-            <p>No transactions yet.</p>
-        {% endif %}
-    </div>
+    {% if transactions %}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
 
-    <!-- Monthly Summary Card -->
-    <div class="card">
-        <h2>Monthly Summary</h2>
+        {% for t in transactions %}
+        <tr {% if t.id in anomalies %}style="background: rgba(255,0,0,0.15);" {% endif %}>
+            <td>{{ t.date }}</td>
+            <td>{{ t.category }}</td>
+            <td class="{% if t.amount_cents > 0 %}income{% else %}expense{% endif %}">
+                ${{ "%.2f"|format(t.amount_cents / 100) }}
+            </td>
+            <td>
+                <form action="/delete/{{ t.id }}" method="post">
+                    <input type="hidden" name="lang" value="{{ lang }}">
+                    <button class="btn-delete">{{ text[lang]["delete"] }}</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>{{ text[lang]["no_transactions"] }}</p>
+    {% endif %}
+</div>
 
-        {% if months %}
+<!-- Monthly Summary -->
+<div class="card">
+    <h2>{{ text[lang]["summary"] }}</h2>
+
+    {% if months %}
+        <ul>
+            {% for i in range(months|length) %}
+                <li>{{ months[i] }} : ${{ "%.2f"|format(totals[i] / 100) }}</li>
+            {% endfor %}
+        </ul>
+
+        <p><strong>{{ text[lang]["average"] }}:</strong>
+            ${{ "%.2f"|format(avg / 100) }}</p>
+
+        <p><strong>{{ text[lang]["volatility"] }}:</strong>
+            ${{ "%.2f"|format(std / 100) }}</p>
+
+        {% if predictions and predictions|length > 0 %}
+            <h3>{{ text[lang]["forecast"] }}</h3>
             <ul>
-                {% for i in range(months|length) %}
-                    <li>{{ months[i] }} : ${{ totals[i] / 100 }}</li>
+                {% for p in predictions %}
+                    <li>${{ "%.2f"|format(p / 100) }}</li>
                 {% endfor %}
             </ul>
-
-            <p><strong>Average Monthly Net:</strong> ${{ avg / 100 }}</p>
-            <p><strong>Monthly Volatility (Std Dev):</strong> ${{ std / 100 }}</p>
-        {% else %}
-            <p>No monthly data yet.</p>
         {% endif %}
-    </div>
+
+        <!-- AI Section -->
+        <div style="margin-top:25px;">
+            <button id="ai-btn" class="btn-primary">
+                🤖 {{ text[lang]["ai_button"] }}
+            </button>
+
+            <div id="ai-result" class="ai-box"></div>
+        </div>
+
+    {% else %}
+        <p>{{ text[lang]["no_monthly"] }}</p>
+    {% endif %}
+</div>
+
+</div>
+
+<script>
+document.getElementById("ai-btn")?.addEventListener("click", function() {
+    const resultBox = document.getElementById("ai-result");
+    resultBox.innerHTML = "{{ text[lang]['ai_loading'] }}";
+
+    fetch("/ai-advice", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "lang={{ lang }}"
+    })
+    .then(response => response.json())
+    .then(data => {
+        resultBox.innerHTML = data.advice.replace(/\n/g, "<br>");
+    })
+    .catch(() => {
+        resultBox.innerHTML = "Error generating advice.";
+    });
+});
+</script>
 
 </body>
-
 </html>
